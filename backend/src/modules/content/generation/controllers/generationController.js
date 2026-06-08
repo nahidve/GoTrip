@@ -6,6 +6,8 @@ import {
   updateGeneratedContentStatus,
 } from "../repositories/contentRepository.js";
 
+import { createJobsFromContent } from "../../publishing/services/publishingService.js";
+
 export async function generateContentForArticle(
   req,
   res
@@ -40,20 +42,24 @@ export async function getAwaitingApproval(
   res.json(content);
 }
 
-export async function approveGeneratedContent(
-  req,
-  res
-) {
+export async function approveGeneratedContent(req, res) {
   const { id } = req.params;
 
-  await updateGeneratedContentStatus(
-    id,
-    "APPROVED"
-  );
+  await updateGeneratedContentStatus(id, "APPROVED");
+
+  // Step 3 integration: create publishing jobs
+  await createJobsFromContent(id, [
+    "LINKEDIN",
+    "INSTAGRAM",
+    "NEWSLETTER",
+    "FACEBOOK",
+    "BLOG",
+  ]);
 
   res.json({
     success: true,
     status: "APPROVED",
+    publishingJobsCreated: true,
   });
 }
 

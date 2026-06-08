@@ -8,6 +8,7 @@ import cors from "cors";
 import rssRoutes from "./modules/content/rss/routes/rssRoutes.js";
 import generationRoutes from "./modules/content/generation/routes/generationRoutes.js";
 import dashboardRoutes from "./modules/content/dashboard/routes/dashboardRoutes.js";
+import publishingRoutes from "./modules/content/publishing/routes/publishingRoutes.js";
 import { startSchedulers } from "./schedulers/index.js";
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/rss", rssRoutes);
 app.use("/api/generation", generationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/publishing", publishingRoutes);
 
 startSchedulers();
 

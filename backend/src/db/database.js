@@ -43,6 +43,33 @@ db.run(`
   )
 `);
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS publishing_jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    generatedContentId INTEGER NOT NULL,
+    platform TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    scheduledFor TEXT,
+    publishedAt TEXT,
+    attempts INTEGER DEFAULT 0,
+    lastError TEXT,
+    createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+db.run(`ALTER TABLE publishing_jobs ADD COLUMN attempts INTEGER DEFAULT 0`, (err) => {
+  if (err && !err.message.includes("duplicate column")) {
+    console.error(err.message);
+  }
+});
+
+db.run(`ALTER TABLE publishing_jobs ADD COLUMN lastError TEXT`, (err) => {
+  if (err && !err.message.includes("duplicate column")) {
+    console.error(err.message);
+  }
+});
+
+
 });
 
 export default db;
