@@ -1,0 +1,6 @@
+{
+  "name": "GoTrip - Premium Luxury Travel Platform",
+  "description": "The world's premier digital flagship travel platform. Hand-selected sanctuaries, bespoke itineraries, elite private jets, and concierge services for the global explorer.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

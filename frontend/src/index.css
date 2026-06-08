@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700;800&family=Syne:wght@700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-editorial: "Playfair Display", serif;
+  --font-syne: "Syne", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-brand-red: #E23E26;
+  --color-brand-yellow: #E2FF00;
+  --color-brand-cyan: #00F0FF;
+  --color-brand-pink: #FF0066;
+  --color-brand-orange: #FF5A00;
+}
+
+/* Custom premium scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FDFBF7;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #111111;
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E23E26;
+}
+
+/* Custom selection */
+::selection {
+  background-color: #E2FF00;
+  color: #000000;
+}
+
+/* Neo-brutalist helper utilities */
+.neo-border {
+  border: 2px solid #111111;
+}
+
+.neo-border-3 {
+  border: 3px solid #111111;
+}
+
+.neo-shadow {
+  box-shadow: 4px 4px 0px 0px #111111;
+}
+
+.neo-shadow-lg {
+  box-shadow: 8px 8px 0px 0px #111111;
+}
+
+.neo-shadow-sm {
+  box-shadow: 2px 2px 0px 0px #111111;
+}
+
+.neo-btn {
+  border: 2px solid #111111;
+  box-shadow: 3px 3px 0px 0px #111111;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.neo-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #111111;
+}
+
+.neo-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px 0px #111111;
+}
+
+/* Custom premium custom cursor */
+.custom-cursor-outer {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 2.5px solid #111111;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: width 0.2s, height 0.2s, background-color 0.2s, transform 0.05s ease-out;
+  mix-blend-mode: difference;
+}
+
+.custom-cursor-inner {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background-color: #E23E26;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  mix-blend-mode: normal;
+}
+
+/* Editorial line highlights */
+.highlight-yellow {
+  background: linear-gradient(180deg, rgba(255,255,255,0) 50%, #E2FF00 50%);
+}
+
+.highlight-cyan {
+  background: linear-gradient(180deg, rgba(255,255,255,0) 50%, #00F0FF 50%);
+}
+
+.highlight-pink {
+  background: linear-gradient(180deg, rgba(255,255,255,0) 50%, #FF0066 50%);
+}
+
+/* Marquee infinite slow track animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Border Beam effect styling */
+@keyframes border-beam {
+  0% { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+
+.border-beam-container {
+  position: relative;
+  border-radius: 0px;
+}
+
+.border-beam {
+  position: absolute;
+  inset: 0;
+  border: 4px solid transparent;
+  pointer-events: none;
+  background: linear-gradient(to right, #E23E26, #E2FF00, #00F0FF, #E23E26) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  animation: border-beam-flow 4s linear infinite;
+  background-size: 300% 300%;
+}
+
+@keyframes border-beam-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Day & Night Cabin Overrides */
+html.dark {
+  background-color: #0A0A09 !important;
+  color: #FDFBF7 !important;
+}
+
+html.dark body {
+  background-color: #0A0A09 !important;
+  color: #FDFBF7 !important;
+}
+
+html.dark .bg-\[\#FDFBF7\],
+html.dark .bg-white,
+html.dark .bg-\[\#FFF5E9\],
+html.dark .bg-\[\#FFEFE8\] {
+  background-color: #121210 !important;
+  color: #FDFBF7 !important;
+}
+
+html.dark .text-black,
+html.dark .text-\[\#111111\] {
+  color: #FDFBF7 !important;
+}
+
+html.dark .text-gray-400,
+html.dark .text-gray-500,
+html.dark .text-gray-600,
+html.dark .text-gray-700 {
+  color: #BEBEB3 !important;
+}
+
+html.dark .border-black,
+html.dark .border-2,
+html.dark .border-3,
+html.dark .border-b-2,
+html.dark .border-b-4,
+html.dark .border-y-4,
+html.dark .border-t,
+html.dark .border-b,
+html.dark .border-dashed {
+  border-color: #E2FF00 !important;
+}
+
+html.dark .neo-shadow {
+  box-shadow: 4px 4px 0px 0px #E2FF00 !important;
+}
+
+html.dark .neo-shadow-lg {
+  box-shadow: 8px 8px 0px 0px #E2FF00 !important;
+}
+
+html.dark .neo-shadow-sm {
+  box-shadow: 2px 2px 0px 0px #E2FF00 !important;
+}
+
+html.dark .neo-btn {
+  border-color: #E2FF00 !important;
+  box-shadow: 3px 3px 0px 0px #E2FF00 !important;
+}
+
+html.dark .neo-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #E2FF00 !important;
+}
+
+html.dark input, 
+html.dark select,
+html.dark textarea {
+  background-color: #1A1A17 !important;
+  color: #FDFBF7 !important;
+  border-color: #E2FF00 !important;
+}
+
+html.dark input::placeholder {
+  color: #7B7B70 !important;
+}
+
+/* Progressive Blur transitions */
+.blur-reveal {
+  filter: blur(15px);
+  transition: filter 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+.blur-reveal.active {
+  filter: blur(0px);
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Squiggly and spinning decoratives */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
