@@ -2,6 +2,7 @@ import {
   claimPendingJob,
   markPublished,
   markFailed,
+  resetJobToPending
 } from "../repositories/publishingRepository.js";
 
 const MAX_ATTEMPTS = 3;
@@ -69,23 +70,7 @@ async function workerLoop() {
       }
 
       // retry strategy: revert to PENDING
-      await new Promise((resolve, reject) => {
-        const db = require("../../../../db/database.js").db;
-
-        db.run(
-          `
-          UPDATE publishing_jobs
-          SET status = 'PENDING',
-              lastError = ?
-          WHERE id = ?
-          `,
-          [err.message, job.id],
-          function (e) {
-            if (e) return reject(e);
-            resolve();
-          }
-        );
-      });
+      await resetJobToPending(job.id, err.message);
     }
   }
 }

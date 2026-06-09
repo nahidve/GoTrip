@@ -4,12 +4,7 @@ import db from "../../../../db/database.js";
 
 export async function createPublishingJob(job) {
   return new Promise((resolve, reject) => {
-    const stmt = `
-      INSERT INTO publishing_jobs 
-      (generatedContentId, platform, status, scheduledFor)
-      VALUES (?, ?, ?, ?)
-    `;
-
+    const stmt = `INSERT INTO publishing_jobs (generatedContentId, platform, status, scheduledFor) VALUES (?, ?, ?, ?)`;
     db.run(
       stmt,
       [
@@ -27,38 +22,17 @@ export async function createPublishingJob(job) {
 }
 
 export async function createBulkPublishingJobs(jobs) {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run("BEGIN TRANSACTION");
+  const results = [];
 
-      const stmt = db.prepare(`
-        INSERT INTO publishing_jobs 
-        (generatedContentId, platform, status, scheduledFor)
-        VALUES (?, ?, ?, ?)
-      `);
+  for (const job of jobs) {
+    const created = await createPublishingJob(job);
+    results.push(created);
+  }
 
-      try {
-        for (const job of jobs) {
-          stmt.run([
-            job.generatedContentId,
-            job.platform,
-            job.status || "PENDING",
-            job.scheduledFor || null,
-          ]);
-        }
-
-        stmt.finalize();
-
-        db.run("COMMIT", (err) => {
-          if (err) return reject(err);
-          resolve({ success: true, count: jobs.length });
-        });
-      } catch (err) {
-        db.run("ROLLBACK");
-        reject(err);
-      }
-    });
-  });
+  return {
+    success: true,
+    count: results.length,
+  };
 }
 
 /* -------------------- READ -------------------- */
@@ -151,57 +125,44 @@ export async function updateJobStatus(id, status, extra = {}) {
 
 export async function claimPendingJob() {
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run("BEGIN TRANSACTION");
+    db.get(
+      `
+      SELECT * FROM publishing_jobs
+      WHERE status = 'PENDING'
+      ORDER BY createdAt ASC
+      LIMIT 1
+      `,
+      [],
+      (err, job) => {
+        if (err) return reject(err);
 
-      db.get(
-        `
-        SELECT * FROM publishing_jobs
-        WHERE status = 'PENDING'
-        ORDER BY createdAt ASC
-        LIMIT 1
-        `,
-        [],
-        (err, job) => {
-          if (err) {
-            db.run("ROLLBACK");
-            return reject(err);
-          }
-
-          if (!job) {
-            db.run("COMMIT");
-            return resolve(null);
-          }
-
-          db.run(
-            `
-            UPDATE publishing_jobs
-            SET status = 'IN_PROGRESS',
-                attempts = COALESCE(attempts, 0) + 1
-            WHERE id = ? AND status = 'PENDING'
-            `,
-            [job.id],
-            function (err2) {
-              if (err2) {
-                db.run("ROLLBACK");
-                return reject(err2);
-              }
-
-              if (this.changes === 0) {
-                db.run("ROLLBACK");
-                return resolve(null);
-              }
-
-              db.run("COMMIT");
-              resolve({
-                ...job,
-                attempts: (job.attempts || 0) + 1,
-              });
-            }
-          );
+        if (!job) {
+          return resolve(null);
         }
-      );
-    });
+
+        db.run(
+          `
+          UPDATE publishing_jobs
+          SET status = 'IN_PROGRESS',
+              attempts = COALESCE(attempts, 0) + 1
+          WHERE id = ? AND status = 'PENDING'
+          `,
+          [job.id],
+          function (err2) {
+            if (err2) return reject(err2);
+
+            if (this.changes === 0) {
+              return resolve(null);
+            }
+
+            resolve({
+              ...job,
+              attempts: (job.attempts || 0) + 1,
+            });
+          }
+        );
+      }
+    );
   });
 }
 
@@ -226,6 +187,46 @@ export async function markFailed(id, error) {
       function (err) {
         if (err) return reject(err);
         resolve({ updated: this.changes });
+      }
+    );
+  });
+}
+
+export async function queueJob(id) {
+  return updateJobStatus(id, "PENDING");
+}
+
+export async function resetJobToPending(id, error) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `
+      UPDATE publishing_jobs
+      SET status = 'PENDING',
+          lastError = ?
+      WHERE id = ?
+      `,
+      [error, id],
+      function (err) {
+        if (err) return reject(err);
+        resolve({ updated: this.changes });
+      }
+    );
+  });
+}
+
+export async function getJobsByStatus(status) {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `
+      SELECT *
+      FROM publishing_jobs
+      WHERE status = ?
+      ORDER BY createdAt DESC
+      `,
+      [status],
+      (err, rows) => {
+        if (err) return reject(err);
+        resolve(rows);
       }
     );
   });

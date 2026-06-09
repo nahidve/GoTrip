@@ -48,7 +48,7 @@ db.run(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     generatedContentId INTEGER NOT NULL,
     platform TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'PENDING',
+    status TEXT NOT NULL DEFAULT 'DRAFT',
     scheduledFor TEXT,
     publishedAt TEXT,
     attempts INTEGER DEFAULT 0,

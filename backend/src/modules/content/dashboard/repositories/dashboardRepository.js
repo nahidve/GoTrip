@@ -38,11 +38,49 @@ export async function getDashboardStats() {
     `
   );
 
+  const draftPublishingJobs = await getCount(
+  `
+  SELECT COUNT(*) as count
+  FROM publishing_jobs
+  WHERE status='DRAFT'
+  `
+);
+
+const pendingPublishingJobs = await getCount(
+  `
+  SELECT COUNT(*) as count
+  FROM publishing_jobs
+  WHERE status='PENDING'
+  `
+);
+
+const publishedJobs = await getCount(
+  `
+  SELECT COUNT(*) as count
+  FROM publishing_jobs
+  WHERE status='PUBLISHED'
+  `
+);
+
+const failedPublishingJobs = await getCount(
+  `
+  SELECT COUNT(*) as count
+  FROM publishing_jobs
+  WHERE status='FAILED'
+  `
+);
+
   return {
-    pendingArticles,
-    approvedArticles,
-    rejectedArticles,
-    awaitingApprovalContent,
-    approvedContent,
-  };
+  pendingArticles,
+  approvedArticles,
+  rejectedArticles,
+
+  awaitingApprovalContent,
+  approvedContent,
+
+  draftPublishingJobs,
+  pendingPublishingJobs,
+  publishedJobs,
+  failedPublishingJobs,
+};
 }

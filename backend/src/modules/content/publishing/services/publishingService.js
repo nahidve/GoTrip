@@ -5,7 +5,7 @@ export async function createJobsFromContent(contentId, platforms) {
   const jobs = platforms.map((p) => ({
     generatedContentId: contentId,
     platform: p,
-    status: "PENDING",
+    status: "DRAFT",
   }));
 
   return await createBulkPublishingJobs(jobs);
