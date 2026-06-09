@@ -3,19 +3,48 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { create } from 'zustand';
-import { Booking, UserProfile, Destination, Suite, Experience } from './types';
-import { USER_MOCK, DESTINATIONS, HOTEL_SUITES, EXPERIENCES_AMALFI } from './data';
+import { create } from "zustand";
+import { Booking, UserProfile, Destination, Suite, Experience } from "./types";
+import {
+  USER_MOCK,
+  DESTINATIONS,
+  HOTEL_SUITES,
+  EXPERIENCES_AMALFI,
+} from "./data";
 
 interface AppState {
   // Auth state
   user: UserProfile;
   isAuthenticated: boolean;
   updateUserPoints: (points: number) => void;
-  
+
   // Navigation / UI state
-  activePage: 'home' | 'amalfi' | 'itinerary' | 'stays' | 'hotel' | 'checkout' | 'dashboard' | 'dispatch' | 'about' | 'support';
-  setActivePage: (page: 'home' | 'amalfi' | 'itinerary' | 'stays' | 'hotel' | 'checkout' | 'dashboard' | 'dispatch' | 'about' | 'support') => void;
+  activePage:
+    | "home"
+    | "amalfi"
+    | "itinerary"
+    | "stays"
+    | "hotel"
+    | "checkout"
+    | "dashboard"
+    | "dispatch"
+    | "about"
+    | "support"
+    | "admin";
+  setActivePage: (
+    page:
+      | "home"
+      | "amalfi"
+      | "itinerary"
+      | "stays"
+      | "hotel"
+      | "checkout"
+      | "dashboard"
+      | "dispatch"
+      | "about"
+      | "support"
+      | "admin",
+  ) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   selectedDate: string;
@@ -41,7 +70,7 @@ interface AppState {
     tax: number;
     total: number;
   };
-  setBookingDetails: (details: Partial<AppState['currentBooking']>) => void;
+  setBookingDetails: (details: Partial<AppState["currentBooking"]>) => void;
   confirmBooking: () => void;
   pastBookings: Booking[];
 
@@ -57,9 +86,9 @@ interface AppState {
 }
 
 const initialBookingState = {
-  destinationId: 'amalfi',
-  checkIn: '2026-10-12',
-  checkOut: '2026-10-16',
+  destinationId: "amalfi",
+  checkIn: "2026-10-12",
+  checkOut: "2026-10-16",
   guests: 2,
   subtotal: 3400,
   tax: 408,
@@ -69,19 +98,20 @@ const initialBookingState = {
 export const useAppStore = create<AppState>((set, get) => ({
   user: USER_MOCK,
   isAuthenticated: true,
-  updateUserPoints: (points) => set((state) => ({
-    user: { ...state.user, points: state.user.points + points }
-  })),
+  updateUserPoints: (points) =>
+    set((state) => ({
+      user: { ...state.user, points: state.user.points + points },
+    })),
 
-  activePage: 'home',
+  activePage: "home",
   setActivePage: (page) => {
     set({ activePage: page });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   },
 
-  searchQuery: '',
+  searchQuery: "",
   setSearchQuery: (query) => set({ searchQuery: query }),
-  selectedDate: '2026-10-12',
+  selectedDate: "2026-10-12",
   setSelectedDate: (date) => set({ selectedDate: date }),
 
   cursorHovered: false,
@@ -97,35 +127,38 @@ export const useAppStore = create<AppState>((set, get) => ({
       (d) =>
         d.name.toLowerCase().includes(query.toLowerCase()) ||
         d.country.toLowerCase().includes(query.toLowerCase()) ||
-        d.tagline.toLowerCase().includes(query.toLowerCase())
+        d.tagline.toLowerCase().includes(query.toLowerCase()),
     );
     set({ filteredDestinations: filtered });
   },
 
   currentBooking: initialBookingState,
-  setBookingDetails: (details) => set((state) => {
-    const updated = { ...state.currentBooking, ...details };
-    // Auto-calculate values
-    const guestsFactor = updated.guests || 2;
-    // Base prices for calculation
-    const suitePrice = state.selectedSuite ? state.selectedSuite.price : 850;
-    const additionalPrice = state.selectedExperience ? state.selectedExperience.price : 0;
-    
-    // 4 nights default
-    const nights = 4;
-    const subtotal = (suitePrice * nights) + additionalPrice;
-    const tax = Math.round(subtotal * 0.12);
-    const total = subtotal + tax;
+  setBookingDetails: (details) =>
+    set((state) => {
+      const updated = { ...state.currentBooking, ...details };
+      // Auto-calculate values
+      const guestsFactor = updated.guests || 2;
+      // Base prices for calculation
+      const suitePrice = state.selectedSuite ? state.selectedSuite.price : 850;
+      const additionalPrice = state.selectedExperience
+        ? state.selectedExperience.price
+        : 0;
 
-    return {
-      currentBooking: {
-        ...updated,
-        subtotal,
-        tax,
-        total,
-      }
-    };
-  }),
+      // 4 nights default
+      const nights = 4;
+      const subtotal = suitePrice * nights + additionalPrice;
+      const tax = Math.round(subtotal * 0.12);
+      const total = subtotal + tax;
+
+      return {
+        currentBooking: {
+          ...updated,
+          subtotal,
+          tax,
+          total,
+        },
+      };
+    }),
 
   pastBookings: [
     {
@@ -137,7 +170,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       subtotal: 7800,
       tax: 936,
       total: 8736,
-      status: 'confirmed'
+      status: "confirmed",
     },
     {
       id: "BK-4421",
@@ -148,8 +181,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       subtotal: 4500,
       tax: 540,
       total: 5040,
-      status: 'confirmed'
-    }
+      status: "confirmed",
+    },
   ],
 
   confirmBooking: () => {
@@ -163,7 +196,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       subtotal: currentBooking.subtotal,
       tax: currentBooking.tax,
       total: currentBooking.total,
-      status: 'confirmed'
+      status: "confirmed",
     };
 
     // Add points
@@ -173,55 +206,58 @@ export const useAppStore = create<AppState>((set, get) => ({
       pastBookings: [newBooking, ...pastBookings],
       user: {
         ...user,
-        points: user.points + pointsEarned
-      }
+        points: user.points + pointsEarned,
+      },
     });
   },
 
-  wishlist: ['paris'],
-  toggleWishlist: (id) => set((state) => {
-    const exists = state.wishlist.includes(id);
-    return {
-      wishlist: exists
-        ? state.wishlist.filter((item) => item !== id)
-        : [...state.wishlist, id]
-    };
-  }),
+  wishlist: ["paris"],
+  toggleWishlist: (id) =>
+    set((state) => {
+      const exists = state.wishlist.includes(id);
+      return {
+        wishlist: exists
+          ? state.wishlist.filter((item) => item !== id)
+          : [...state.wishlist, id],
+      };
+    }),
 
   selectedSuite: HOTEL_SUITES[0],
-  setSelectedSuite: (suite) => set((state) => {
-    const sPrice = suite ? suite.price : 850;
-    const nights = 4;
-    const subtotal = sPrice * nights;
-    const tax = Math.round(subtotal * 0.12);
-    const total = subtotal + tax;
-    return {
-      selectedSuite: suite,
-      currentBooking: {
-        ...state.currentBooking,
-        subtotal,
-        tax,
-        total
-      }
-    };
-  }),
+  setSelectedSuite: (suite) =>
+    set((state) => {
+      const sPrice = suite ? suite.price : 850;
+      const nights = 4;
+      const subtotal = sPrice * nights;
+      const tax = Math.round(subtotal * 0.12);
+      const total = subtotal + tax;
+      return {
+        selectedSuite: suite,
+        currentBooking: {
+          ...state.currentBooking,
+          subtotal,
+          tax,
+          total,
+        },
+      };
+    }),
 
   selectedExperience: EXPERIENCES_AMALFI[0],
-  setSelectedExperience: (exp) => set((state) => {
-    const ePrice = exp ? exp.price : 0;
-    const sPrice = state.selectedSuite ? state.selectedSuite.price : 850;
-    const nights = 4;
-    const subtotal = (sPrice * nights) + ePrice;
-    const tax = Math.round(subtotal * 0.12);
-    const total = subtotal + tax;
-    return {
-      selectedExperience: exp,
-      currentBooking: {
-        ...state.currentBooking,
-        subtotal,
-        tax,
-        total
-      }
-    };
-  }),
+  setSelectedExperience: (exp) =>
+    set((state) => {
+      const ePrice = exp ? exp.price : 0;
+      const sPrice = state.selectedSuite ? state.selectedSuite.price : 850;
+      const nights = 4;
+      const subtotal = sPrice * nights + ePrice;
+      const tax = Math.round(subtotal * 0.12);
+      const total = subtotal + tax;
+      return {
+        selectedExperience: exp,
+        currentBooking: {
+          ...state.currentBooking,
+          subtotal,
+          tax,
+          total,
+        },
+      };
+    }),
 }));
