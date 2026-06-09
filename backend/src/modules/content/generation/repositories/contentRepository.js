@@ -57,10 +57,14 @@ export function getGeneratedContentByStatus(
   return new Promise((resolve, reject) => {
     db.all(
       `
-      SELECT *
-      FROM generated_content
-      WHERE status = ?
-      ORDER BY createdAt DESC
+      SELECT
+        gc.*,
+        a.title AS articleTitle
+      FROM generated_content gc
+      LEFT JOIN articles a
+        ON a.id = gc.articleId
+      WHERE gc.status = ?
+      ORDER BY gc.createdAt DESC
       `,
       [status],
       (err, rows) => {

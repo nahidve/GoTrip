@@ -1,47 +1,46 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { db } from "./mockDb";
+import { apiFetch } from "./client";
 import { GeneratedContent } from "../types/generatedContent";
+
+function mapGeneratedContent(item: any): GeneratedContent {
+  return {
+    id: String(item.id),
+    articleId: item.articleId,
+    articleTitle: item.articleTitle,
+
+    blogContent: item.blog,
+    linkedinPost: item.linkedin,
+    instagramPost: item.instagram,
+    newsletter: item.newsletter,
+
+    status: item.status.toLowerCase(),
+    createdAt: item.createdAt,
+  };
+}
 
 export const generationApi = {
   getAwaitingApproval: async (): Promise<GeneratedContent[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(
-          db
-            .getGeneratedContent()
-            .filter((c) => c.status === "awaiting_approval"),
-        );
-      }, 100);
-    });
+    const data = await apiFetch("/generation/awaiting-approval");
+    return data.map(mapGeneratedContent);
   },
 
   getAllContent: async (): Promise<GeneratedContent[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(db.getGeneratedContent());
-      }, 100);
-    });
+    const data = await apiFetch("/generation/awaiting-approval");
+    return data.map(mapGeneratedContent);
   },
 
   approveContent: async (id: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        db.approveGeneratedContent(id);
-        resolve(true);
-      }, 100);
+    await apiFetch(`/generation/approve/${id}`, {
+      method: "PATCH",
     });
+
+    return true;
   },
 
   rejectContent: async (id: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        db.rejectGeneratedContent(id);
-        resolve(true);
-      }, 100);
+    await apiFetch(`/generation/reject/${id}`, {
+      method: "PATCH",
     });
+
+    return true;
   },
 };

@@ -49,8 +49,21 @@ export function getRecentActivity(limit = 20) {
           console.error(err);
           reject(err);
         } else {
-          console.log("ACTIVITY ROWS:", rows);
-          resolve(rows);
+          const formatted = rows.map((r) => ({
+            id: String(r.id),
+            type: r.type,
+            message: r.message,
+
+            // frontend expects optional details
+            details:
+              r.entityType || r.entityId
+                ? `${r.entityType ?? ""} ${r.entityId ?? ""}`.trim()
+                : undefined,
+
+            createdAt: r.createdAt,
+          }));
+
+          resolve(formatted);
         }
       }
     );

@@ -1,9 +1,9 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-export type PublishingStatus = "DRAFT" | "PENDING" | "PUBLISHED" | "FAILED";
+export type PublishingStatus =
+  | "DRAFT"
+  | "PENDING"
+  | "IN_PROGRESS"
+  | "PUBLISHED"
+  | "FAILED";
 
 export interface PublishingJob {
   id: string;

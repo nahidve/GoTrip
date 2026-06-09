@@ -1,43 +1,40 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { db } from "./mockDb";
+import { apiFetch } from "./client";
 import { Article } from "../types/article";
+
+function mapArticle(article: any): Article {
+  return {
+    id: article.id,
+    title: article.title,
+    city: article.city,
+    publishedDate: article.publishedAt,
+    sourceUrl: article.link,
+    score: 100,
+    status: article.status.toLowerCase(),
+  };
+}
 
 export const rssApi = {
   getArticles: async (): Promise<Article[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(db.getArticles());
-      }, 100);
-    });
+    const data = await apiFetch("/rss/articles");
+    return data.map(mapArticle);
   },
 
   getPendingArticles: async (): Promise<Article[]> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(db.getArticles().filter((art) => art.status === "pending"));
-      }, 100);
-    });
+    const data = await apiFetch("/rss/pending");
+    return data.map(mapArticle);
   },
 
   approveArticle: async (id: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        db.approveArticle(id);
-        resolve(true);
-      }, 100);
+    await apiFetch(`/rss/approve/${id}`, {
+      method: "PATCH",
     });
+    return true;
   },
 
   rejectArticle: async (id: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        db.rejectArticle(id);
-        resolve(true);
-      }, 100);
+    await apiFetch(`/rss/reject/${id}`, {
+      method: "PATCH",
     });
+    return true;
   },
 };

@@ -53,7 +53,30 @@ export async function getPendingJobs() {
 export async function getAllJobs() {
   return new Promise((resolve, reject) => {
     db.all(
-      `SELECT * FROM publishing_jobs ORDER BY createdAt DESC`,
+      `
+      SELECT
+        pj.*,
+        gc.articleId,
+        a.title AS articleTitle,
+
+        CASE
+          WHEN pj.platform = 'BLOG' THEN substr(gc.blog, 1, 250)
+          WHEN pj.platform = 'LINKEDIN' THEN substr(gc.linkedin, 1, 250)
+          WHEN pj.platform = 'INSTAGRAM' THEN substr(gc.instagram, 1, 250)
+          WHEN pj.platform = 'NEWSLETTER' THEN substr(gc.newsletter, 1, 250)
+          ELSE ''
+        END AS bodyPreview
+
+      FROM publishing_jobs pj
+
+      LEFT JOIN generated_content gc
+        ON gc.id = pj.generatedContentId
+
+      LEFT JOIN articles a
+        ON a.id = gc.articleId
+
+      ORDER BY pj.createdAt DESC
+      `,
       [],
       (err, rows) => {
         if (err) return reject(err);

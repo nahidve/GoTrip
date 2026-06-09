@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { dashboardApi } from "../api/dashboardApi";
+import { getDashboardActivity, getDashboardStats } from "../api/dashboardApi";
 import { DashboardStats, ActivityLog } from "../types/dashboard";
 
 export function useDashboard() {
@@ -17,8 +17,8 @@ export function useDashboard() {
     setLoading(true);
     try {
       const [statsData, activityData] = await Promise.all([
-        dashboardApi.getStats(),
-        dashboardApi.getActivity(),
+        getDashboardStats(),
+        getDashboardActivity(),
       ]);
       setStats(statsData);
       setActivity(activityData);

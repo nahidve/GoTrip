@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { useState, useEffect, useCallback } from "react";
 import { rssApi } from "../api/rssApi";
 import { Article } from "../types/article";
@@ -11,7 +6,6 @@ export function useArticles() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const loadArticles = useCallback(async () => {
     setLoading(true);
     try {
